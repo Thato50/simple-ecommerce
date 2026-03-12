@@ -3,7 +3,9 @@
 {% for product in products %}
 <div>
 
-<h2>{{ product.name }}</h2>
+<a href="/product/{{ product.id }}/">
+    <h2>{{ product.name }}</h2>
+</a>
 
 {% if product.image %}
 <img src="{{ product.image.url }}" width="200">
@@ -15,3 +17,4 @@
 </div>
 <hr>
 {% endfor %}
+
