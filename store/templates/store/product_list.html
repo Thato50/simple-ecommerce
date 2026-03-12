@@ -1,0 +1,17 @@
+<h1>Products</h1>
+
+{% for product in products %}
+<div>
+
+<h2>{{ product.name }}</h2>
+
+{% if product.image %}
+<img src="{{ product.image.url }}" width="200">
+{% endif %}
+
+<p>Price: R{{ product.price }}</p>
+<p>{{ product.description }}</p>
+
+</div>
+<hr>
+{% endfor %}
