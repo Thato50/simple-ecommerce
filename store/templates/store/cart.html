@@ -1,5 +1,31 @@
 <h1>Your Cart</h1>
 
-<p>Your cart items will appear here.</p>
+{% for item in items %}
+
+<div>
+
+<h3>{{ item.product.name }}</h3>
+
+<p>Price: R{{ item.product.price }}</p>
+
+<a href="/decrease/{{ item.product.id }}/">-</a>
+
+<strong>{{ item.quantity }}</strong>
+
+<a href="/increase/{{ item.product.id }}/">+</a>
+
+<p>Total: R{{ item.get_total }}</p>
+
+<a href="/remove-from-cart/{{ item.product.id }}/">
+<button>Remove</button>
+</a>
+
+</div>
+
+<hr>
+
+{% endfor %}
+
+<h2>Cart Total: R{{ order.get_cart_total }}</h2>
 
 <a href="/">Continue Shopping</a>

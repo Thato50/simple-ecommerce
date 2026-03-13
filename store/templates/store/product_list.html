@@ -13,6 +13,9 @@
 {% endif %}
 
 <p>Price: R{{ product.price }}</p>
+<a href="/add-to-cart/{{ product.id }}/">
+    <button>Add to Cart</button>
+</a>
 <p>{{ product.description }}</p>
 
 </div>
