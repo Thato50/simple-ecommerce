@@ -1,9 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Order, OrderItem
 
-# Register
+# Register 
 def register_user(request):
 
     if request.method == "POST":
@@ -63,6 +64,7 @@ def product_detail(request, id):
 
 
 # Display the user's cart
+@login_required
 def cart(request):
     order, created = Order.objects.get_or_create(
         user=request.user,
@@ -78,6 +80,7 @@ def cart(request):
 
 
 # Add product to cart
+@login_required
 def add_to_cart(request, product_id):
     product = Product.objects.get(id=product_id)
 
@@ -100,6 +103,7 @@ def add_to_cart(request, product_id):
     return redirect('cart')
 
 # Increase quantity
+@login_required
 def increase_quantity(request, product_id):
     product = Product.objects.get(id=product_id)
 
@@ -113,6 +117,7 @@ def increase_quantity(request, product_id):
     return redirect('cart')
 
 #Decrease quantity
+@login_required
 def decrease_quantity(request, product_id):
     product = Product.objects.get(id=product_id)
 
@@ -140,3 +145,29 @@ def remove_from_cart(request, product_id):
     order_item.delete()
 
     return redirect('cart')
+
+# Checkout
+@login_required
+def checkout(request):
+
+    order = Order.objects.get(
+        user=request.user,
+        completed=False
+    )
+
+    order.completed = True
+    order.save()
+
+    return render(request, 'store/checkout_success.html', {'order': order})
+
+
+#Order History
+@login_required
+def order_history(request):
+
+    orders = Order.objects.filter(
+        user=request.user,
+        completed=True
+    ).order_by('-created_at')
+
+    return render(request, 'store/order_history.html', {'orders': orders})
