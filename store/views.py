@@ -1,5 +1,53 @@
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Order, OrderItem
+
+# Register
+def register_user(request):
+
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = User.objects.create_user(
+            username=username,
+            password=password
+        )
+
+        login(request, user)
+
+        return redirect('product_list')
+
+    return render(request, 'store/register.html')
+
+
+# Login
+def login_user(request):
+
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        if user is not None:
+            login(request, user)
+            return redirect('product_list')
+
+    return render(request, 'store/login.html')
+
+
+# Logout
+def logout_user(request):
+
+    logout(request)
+
+    return redirect('product_list')
 
 
 # Display all products
