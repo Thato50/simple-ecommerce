@@ -27,8 +27,13 @@
 {% endfor %}
 
 <h2>Cart Total: R{{ order.get_cart_total }}</h2>
-<a href="{% url 'checkout' %}">
-    <button>Checkout</button>
-</a>
+{% if order.get_cart_total > 0 %}
+    <a href="{% url 'payment' %}">
+        <button>Checkout</button>
+    </a>
+{% else %}
+    <button disabled>Checkout</button>
+    <p>Your cart is empty</p>
+{% endif %}
 
 <a href="/">Continue Shopping</a>

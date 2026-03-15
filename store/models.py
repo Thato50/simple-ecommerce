@@ -38,3 +38,16 @@ class OrderItem(models.Model):
     def get_total(self):
         total = self.product.price * self.quantity
         return total
+
+
+class PaymentCard(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    card_number = models.CharField(max_length=16)
+    expiry = models.CharField(max_length=5)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Card ending in {self.card_number[-4:]}"

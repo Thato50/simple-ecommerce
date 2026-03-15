@@ -1,0 +1,30 @@
+<h2>Payment</h2>
+
+<p>Total: R{{ order.get_cart_total }}</p>
+
+<h3>Saved Cards</h3>
+
+{% for card in cards %}
+    <p>
+        **** **** **** {{ card.card_number|slice:"-4:" }}
+    </p>
+{% empty %}
+    <p>No saved cards</p>
+{% endfor %}
+
+<hr>
+
+<h3>Add New Card</h3>
+
+<form method="POST">
+{% csrf_token %}
+
+<label>Card Number</label><br>
+<input type="text" name="card_number"><br><br>
+
+<label>Expiry</label><br>
+<input type="text" name="expiry"><br><br>
+
+<button type="submit">Pay Now</button>
+
+</form>

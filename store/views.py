@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product, Order, OrderItem
+from .models import Product, Order, OrderItem , PaymentCard
 
 # Register 
 def register_user(request):
@@ -82,23 +82,22 @@ def cart(request):
 # Add product to cart
 @login_required
 def add_to_cart(request, product_id):
+
     product = Product.objects.get(id=product_id)
 
-    # get or create the cart
     order, created = Order.objects.get_or_create(
         user=request.user,
         completed=False
     )
 
-    # get or create the cart item
     order_item, created = OrderItem.objects.get_or_create(
         order=order,
         product=product
     )
 
-    # increase quantity
-    order_item.quantity += 1
-    order_item.save()
+    if not created:
+        order_item.quantity += 1
+        order_item.save()
 
     return redirect('cart')
 
@@ -155,6 +154,11 @@ def checkout(request):
         completed=False
     )
 
+    items = order.orderitem_set.all()
+
+    if not items:
+        return redirect('cart')
+
     order.completed = True
     order.save()
 
@@ -171,3 +175,38 @@ def order_history(request):
     ).order_by('-created_at')
 
     return render(request, 'store/order_history.html', {'orders': orders})
+
+
+#Payment
+@login_required
+def payment(request):
+
+    order = Order.objects.get(user=request.user, completed=False)
+
+    if order.get_cart_total == 0:
+        return redirect('cart')
+
+    cards = PaymentCard.objects.filter(user=request.user)
+
+    if request.method == "POST":
+
+        card_number = request.POST.get("card_number")
+        expiry = request.POST.get("expiry")
+
+        # Save new card
+        if card_number:
+            PaymentCard.objects.create(
+                user=request.user,
+                card_number=card_number,
+                expiry=expiry
+            )
+
+        order.completed = True
+        order.save()
+
+        return render(request, 'store/checkout_success.html', {'order': order})
+
+    return render(request, 'store/payment.html', {
+        'order': order,
+        'cards': cards
+    })
